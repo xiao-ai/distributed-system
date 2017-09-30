@@ -127,7 +127,8 @@ public class ThreadTester {
 //        System.out.println();
 //        System.out.println("95th percentile of GET request latency: " + calculatePercentile(getLatencyList, 0.95) + " ms");
 //        System.out.println("95th percentile of POST request latency: " + calculatePercentile(postLatencyList, 0.95) + " ms");
-//        System.out.println("95th percentile of GET&POST requests latency: " + calculatePercentile(latencyList, 0.95) + " ms");
+        System.out.println("95th percentile of GET&POST requests latency: " + calculatePercentile(latencyList, 0.95) + " ms");
+        
 
     }
 
