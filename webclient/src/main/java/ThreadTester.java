@@ -73,8 +73,8 @@ public class ThreadTester {
         for (Future<Result> future : results) {
             try {
                 Result result = future.get();
-                successGetRequests += result.getGetSuccess();
-                successPostRequests += result.getPostSuccess();
+                successGetRequests += result.getGetSuccessCount();
+                successPostRequests += result.getPostSuccessCount();
                 getLatencyList.addAll(result.getGetLatencies());
                 postLatencyList.addAll(result.getPostLatencies());
 
@@ -119,22 +119,20 @@ public class ThreadTester {
         System.out.println("All latencies mean: " + mean + " ms");
         System.out.println();
         System.out.println("----------------------------------------------------------");
-        System.out.println(Arrays.toString(getLatencyList.toArray()));
-        System.out.println(Arrays.toString(postLatencyList.toArray()));
-//        System.out.println("99th percentile of GET request latency: " + calculatePercentile(getLatencyList, 0.99) + " ms");
-//        System.out.println("99th percentile of POST request latency: " + calculatePercentile(postLatencyList, 0.99) + " ms");
-//        System.out.println("99th percentile of GET&POST requests latency: " + calculatePercentile(latencyList, 0.99) + " ms");
-//        System.out.println();
-//        System.out.println("95th percentile of GET request latency: " + calculatePercentile(getLatencyList, 0.95) + " ms");
-//        System.out.println("95th percentile of POST request latency: " + calculatePercentile(postLatencyList, 0.95) + " ms");
+        System.out.println("99th percentile of GET request latency: " + calculatePercentile(getLatencyList, 0.99) + " ms");
+        System.out.println("99th percentile of POST request latency: " + calculatePercentile(postLatencyList, 0.99) + " ms");
+        System.out.println("99th percentile of GET&POST requests latency: " + calculatePercentile(latencyList, 0.99) + " ms");
+        System.out.println();
+        System.out.println("95th percentile of GET request latency: " + calculatePercentile(getLatencyList, 0.95) + " ms");
+        System.out.println("95th percentile of POST request latency: " + calculatePercentile(postLatencyList, 0.95) + " ms");
         System.out.println("95th percentile of GET&POST requests latency: " + calculatePercentile(latencyList, 0.95) + " ms");
-        
+
 
     }
 
     public static void main(String[] args) {
-        int threadCount = 10;
-        int iteration = 1;
+        int threadCount = 500;
+        int iteration = 500;
         String ip = "http://54.213.88.175";
         String port = "8080";
         String servicePath = "webservice/webapi/myresource";

@@ -8,9 +8,6 @@ public class HttpRequest implements Callable<Result> {
     private int iteration;
     private WebTarget webTarget;
 
-    private int getSuccess = 0;
-    private int postSuccess = 0;
-
     public HttpRequest(int iteration, WebTarget webTarget) {
         this.iteration = iteration;
         this.webTarget = webTarget;
@@ -27,6 +24,8 @@ public class HttpRequest implements Callable<Result> {
     public Result call() throws Exception {
         List<Long> getLatencies = new ArrayList<>();
         List<Long> postLatencies = new ArrayList<>();
+        int getSuccess = 0;
+        int postSuccess = 0;
 
         for (int i = 0; i < iteration; i++) {
             long getStartTime = System.currentTimeMillis();
@@ -42,9 +41,7 @@ public class HttpRequest implements Callable<Result> {
 
             long postEndTime = System.currentTimeMillis();
 
-
             long getLatency = getEndTime - getStartTime;
-            System.out.println(getLatency);
             long postLatency = postEndTime - getEndTime;
 
             getLatencies.add(getLatency);

@@ -3,8 +3,8 @@ import java.util.List;
 public class Result {
     private List<Long> getLatencies;
     private List<Long> postLatencies;
-    private int getSuccess;
-    private int postSuccess;
+    private int getSuccessCount;
+    private int postSuccessCount;
 
     public List<Long> getGetLatencies() {
         return getLatencies;
@@ -14,18 +14,18 @@ public class Result {
         return postLatencies;
     }
 
-    public int getGetSuccess() {
-        return getSuccess;
+    public int getGetSuccessCount() {
+        return getSuccessCount;
     }
 
-    public int getPostSuccess() {
-        return postSuccess;
+    public int getPostSuccessCount() {
+        return postSuccessCount;
     }
 
     public Result(List<Long> getLatencies, List<Long> postLatencies, int getSuccess, int postSuccess) {
         this.getLatencies = getLatencies;
         this.postLatencies = postLatencies;
-        this.getSuccess = getSuccess;
-        this.postSuccess = postSuccess;
+        this.getSuccessCount = getSuccess;
+        this.postSuccessCount = postSuccess;
     }
 }
