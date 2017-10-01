@@ -131,8 +131,8 @@ public class ThreadTester {
     }
 
     public static void main(String[] args) {
-        int threadCount = 500;
-        int iteration = 500;
+        int threadCount = 100;
+        int iteration = 100;
         String ip = "http://54.213.88.175";
         String port = "8080";
         String servicePath = "webservice/webapi/myresource";
