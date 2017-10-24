@@ -2,26 +2,22 @@ package skiserver.dao;
 
 import com.xiao.RFIDLiftData;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class SkiDao {
     protected ConnectionManager connectionManager;
-//    protected Connection connection;
 
-    public SkiDao()  {
+    public SkiDao() {
         connectionManager = new ConnectionManager();
     }
 
-    public RFIDLiftData create(RFIDLiftData rFIDLiftData) throws SQLException {
-        String insertCost = "INSERT INTO RFIDLiftData " +
-                "(resortId, dayNum, skierId, liftId, time) " +
-                "VALUES(?, ?, ?, ?, ?)";
+    public void create(RFIDLiftData rFIDLiftData, int vertical) throws SQLException {
+        String insertData = "INSERT INTO RFIDLiftData " +
+                "(resortId, dayNum, skierId, liftId, time, vertical) " +
+                "VALUES(?, ?, ?, ?, ?, ?)";
 
         Connection connection = connectionManager.getConnection();
-        PreparedStatement insertStmt = connection.prepareStatement(insertCost);
+        PreparedStatement insertStmt = connection.prepareStatement(insertData);
 
         try {
             insertStmt.setInt(1, rFIDLiftData.getResortID());
@@ -29,9 +25,8 @@ public class SkiDao {
             insertStmt.setInt(3, rFIDLiftData.getSkierID());
             insertStmt.setInt(4, rFIDLiftData.getLiftID());
             insertStmt.setInt(5, rFIDLiftData.getTime());
-
+            insertStmt.setInt(6, vertical);
             insertStmt.executeUpdate();
-            return rFIDLiftData;
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;

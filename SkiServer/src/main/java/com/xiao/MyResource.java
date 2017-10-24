@@ -33,12 +33,22 @@ public class MyResource {
     @Path("load")
     @Consumes(MediaType.APPLICATION_JSON)
     public void postText(RFIDLiftData data) throws SQLException {
+        int vertial = getVertical(data.getLiftID());
 
-        RFIDLiftData rfidLiftData = skiDao.create(data);
-        System.out.println(rfidLiftData.toString());
+        skiDao.create(data, vertial);
+        System.out.println(data.toString());
 
+    }
 
-//        return data.getLiftID();
-
+    public int getVertical(int liftId) {
+        if (liftId >= 1 && liftId <= 10) {
+            return 200;
+        } else if (liftId >= 11 && liftId <= 20) {
+            return 300;
+        } else if (liftId >= 21 && liftId <= 30) {
+            return 400;
+        } else {
+            return 500;
+        }
     }
 }
