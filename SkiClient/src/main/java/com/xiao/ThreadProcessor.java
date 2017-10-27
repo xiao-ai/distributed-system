@@ -1,88 +1,97 @@
 package com.xiao;
 
 import bsdsass2testdata.RFIDLiftData;
+import client.*;
 
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
 public class ThreadProcessor {
 
-    public static WebTarget webTarget;
+    public static WebTarget postWebTarget;
+    public static WebTarget getWebTarget;
+    public static long wallTime;
 
-    public List<Future<Result>> runThread(List<List<RFIDLiftData>> list, WebTarget webTarget) {
-        List<Callable<Result>> tasks = new ArrayList<>();
+    private static List<Future<Statics>> runThread(List<List<RFIDLiftData>> list, WebTarget webTarget) {
+        List<Callable<Statics>> tasks = new ArrayList<>();
         ExecutorService executor = Executors.newFixedThreadPool(list.size());
 
         for (int i = 0; i < 10; i++) {
             List<RFIDLiftData> sublist = list.get(i);
-            tasks.add(new HttpRequest(webTarget, sublist));
+            tasks.add(new PostRequest(webTarget, sublist));
         }
-//        for (List<RFIDLiftData> sublist : list) {
-//            tasks.add(new HttpRequest(webTarget, sublist));
-//        }
 
-        List<Future<Result>> result = null;
+        List<Future<Statics>> result = null;
 
         long start = System.currentTimeMillis();
 
         try {
             System.out.println("Running threads...");
-            result = executor.invokeAll(tasks);
-
+            result = executor.invokeAll(tasks, 2, TimeUnit.HOURS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         executor.shutdown();
 
-        long end = System.currentTimeMillis();
+        if (executor.isShutdown()) {
+            long end = System.currentTimeMillis();
+            wallTime = (end - start) / 1000;
+            System.out.println("[Walltime]:                  " + wallTime);
 
-        try {
-            executor.awaitTermination(5, TimeUnit.HOURS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            // final call
+            webTarget.request(MediaType.TEXT_PLAIN)
+                    .post(Entity.entity("-1,-1,-1,-1,-1", MediaType.TEXT_PLAIN))
+                    .readEntity(String.class);
+
+            return result;
+        } else {
+            System.out.println("System time out! exceed 2 hours!");
+            return null;
         }
+    }
 
-        System.out.println("Finished, total run time: " + (end - start) / 1000 + " seconds");
-
-        return result;
-
+    public static void evaluate(List<Future<Statics>> statics) {
+        if (statics == null) {
+            System.out.println("time out!");
+        } else {
+            Evaluator evaluator = new Evaluator();
+            Metrics metrics = evaluator.startEvaluate(statics);
+            metrics.printMetrics();
+            System.out.println("[Throughput]:                " + metrics.getTotalRequests() / wallTime);
+        }
     }
 
     public static void main(String[] args) {
-        int threadCount = 100;
-
         // localhost
 //        String ip = "http://localhost";
 //        String port = "8080";
 //        String postPath = "/webapi/load";
 //        String getPath = "/webapi/myvert";
 
-        // server
+        // server config
         String ip = "http://34.212.199.110";
         String port = "8080";
         String postPath = "/SkiServer/webapi/load";
         String getPath = "/SkiServer/webapi/myvert";
 
-        System.out.println("Connecting to: " + ip + ":" + port + postPath);
-        HttpClient client = new HttpClient(ip, port, postPath);
-        webTarget = client.getWebTarget();
+        int threadCount = 100;
 
         // read file
         FileProcessor fileProcessor = new FileProcessor();
-        List<List<RFIDLiftData>> partitionedList = fileProcessor.partition(fileProcessor.readFile(), threadCount);
+        List<List<RFIDLiftData>> partitionedList = fileProcessor.partition(threadCount);
 
-        ThreadProcessor threadProcessor = new ThreadProcessor();
+        // post data
+        HttpClient postClient = new HttpClient(ip, port, postPath);
+        postWebTarget = postClient.getWebTarget();
+        List<Future<Statics>> postStatics = runThread(partitionedList, postWebTarget);
 
-        List<Future<Result>> results = threadProcessor.runThread(partitionedList, webTarget);
+        System.out.println("[Total threads]:             " + threadCount);
+        evaluate(postStatics);
 
-        Evaluator evaluator = new Evaluator();
-        evaluator.startEvaluate(results);
     }
 }

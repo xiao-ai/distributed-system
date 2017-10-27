@@ -28,7 +28,8 @@ public class ConnectionManager {
                 throw new SQLException(e);
             }
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://" + this.hostName + ":" + this.port + "/" + this.schema,
+                    "jdbc:mysql://" + this.hostName + ":" + this.port + "/" + this.schema +
+                            "?rewriteBatchedStatements=true&relaxAutoCommit=true",
                     connectionProperties);
         } catch (SQLException e) {
             e.printStackTrace();

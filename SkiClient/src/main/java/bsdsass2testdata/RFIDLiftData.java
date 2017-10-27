@@ -79,15 +79,9 @@ public class RFIDLiftData implements Serializable, Comparable<RFIDLiftData> {
         return this.time - compareTime;
     }
 
-//    @Override
-//    public String toString() {
-//        return "RFIDLiftData{" +
-//                "resortID=" + resortID +
-//                ", dayNum=" + dayNum +
-//                ", skierID=" + skierID +
-//                ", liftID=" + liftID +
-//                ", time=" + time +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        return resortID + "," + dayNum + "," + skierID + "," + liftID + "," + time;
+    }
 
 }

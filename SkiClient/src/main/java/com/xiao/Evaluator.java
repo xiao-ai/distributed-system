@@ -31,16 +31,15 @@ public class Evaluator {
         return list.get((int) index);
     }
 
-    public void startEvaluate(List<Future<Result>> results) {
-        int successPostRequests = 0;
-        List<Long> postLatencyList = new ArrayList<>();
+    public Metrics startEvaluate(List<Future<Statics>> results) {
+        int totalRequests = 0;
+        List<Long> latencyList = new ArrayList<>();
 
-        for (Future<Result> future : results) {
+        for (Future<Statics> future : results) {
             try {
-                Result result = future.get();
-                successPostRequests += result.getPostSuccessCount();
-                postLatencyList.addAll(result.getPostLatencies());
-
+                Statics statics = future.get();
+                totalRequests += statics.getRequestCount();
+                latencyList.addAll(statics.getLatencies());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -49,17 +48,16 @@ public class Evaluator {
 
         }
 
-        Collections.sort(postLatencyList);
+        Collections.sort(latencyList);
 
-        double postMedian = getMedian(postLatencyList);
+        double medianLatency = getMedian(latencyList);
 
-        double postMean = getMean(postLatencyList);
+        double meanLatency = getMean(latencyList);
 
-        System.out.println("[Successful requests]:       " + successPostRequests);
-        System.out.println("[Latency - Median]:          " + postMedian + " ms");
-        System.out.println("[Latency - Mean]:            " + postMean + " ms");
-        System.out.println("[Latency - 99th Percentile]: " + getPercentile(postLatencyList, 0.99) + " ms");
-        System.out.println("[Latency - 95th Percentile]: " + getPercentile(postLatencyList, 0.95) + " ms");
+        long nightyNinePercentile = getPercentile(latencyList, 0.99);
 
+        long nightyFivePerventile = getPercentile(latencyList, 0.95);
+
+        return new Metrics(totalRequests, meanLatency, medianLatency, nightyNinePercentile, nightyFivePerventile, latencyList);
     }
 }

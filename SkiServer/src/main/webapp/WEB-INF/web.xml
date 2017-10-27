@@ -15,4 +15,11 @@
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/webapi/*</url-pattern>
     </servlet-mapping>
+
+    <listener>
+        <listener-class>skiserver.listener.ContextListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>skiserver.listener.CacheListener</listener-class>
+    </listener>
 </web-app>
